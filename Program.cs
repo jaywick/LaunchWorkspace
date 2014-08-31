@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 
@@ -10,6 +11,8 @@ namespace LaunchWorkspace
 {
     static class Program
     {
+        private const int DelayBetweenItems = 2000;
+
         [STAThread]
         static void Main()
         {
@@ -22,18 +25,29 @@ namespace LaunchWorkspace
             }
 
             var workspaceFile = args.Single();
+            var lines = File.ReadAllLines(workspaceFile);
 
-            foreach (var item in File.ReadAllLines(workspaceFile))
+            foreach (var item in lines)
             {
                 try
                 {
-                    Process.Start(item);
+                    run(item);
+                    Thread.Sleep(DelayBetweenItems);
                 }
                 catch (Exception ex)
                 {
                     MessageBox.Show(string.Format("Could not launch '{0}'\n\n{1}", item, ex.Message));
                 }
             }
+        }
+
+        private static void run(string item)
+        {
+            Process proc = new Process();
+            proc.StartInfo.FileName = "cmd.exe";
+            proc.StartInfo.Arguments = string.Format(@"/C ""{0}""", item);
+            proc.StartInfo.WindowStyle = ProcessWindowStyle.Hidden;
+            proc.Start();
         }
     }
 }
