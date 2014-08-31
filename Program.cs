@@ -13,12 +13,27 @@ namespace LaunchWorkspace
         [STAThread]
         static void Main()
         {
-            var args = Environment.GetCommandLineArgs().Skip(1).ToList();
+            var args = Environment.GetCommandLineArgs().Skip(1).ToList(); // skip first item which is this EXE
 
-            if (!args.Any())
+            if (args.Count() != 1)
+            {
+                MessageBox.Show("Invalid command sent to LaunchWorkspace. Expecting single file");
                 return;
+            }
 
-            args.ForEach((item) => Process.Start(item));
+            var workspaceFile = args.Single();
+
+            foreach (var item in File.ReadAllLines(workspaceFile))
+            {
+                try
+                {
+                    Process.Start(item);
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show(string.Format("Could not launch '{0}'\n\n{1}", item, ex.Message));
+                }
+            }
         }
     }
 }
