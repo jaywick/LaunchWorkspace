@@ -11,8 +11,6 @@ namespace LaunchWorkspace
 {
     static class Program
     {
-        private const int DelayBetweenItems = 2000;
-
         [STAThread]
         static void Main()
         {
@@ -32,7 +30,6 @@ namespace LaunchWorkspace
                 try
                 {
                     run(item);
-                    Thread.Sleep(DelayBetweenItems);
                 }
                 catch (Exception ex)
                 {
@@ -47,6 +44,7 @@ namespace LaunchWorkspace
             proc.StartInfo.FileName = "cmd.exe";
             proc.StartInfo.Arguments = string.Format(@"/C ""{0}""", item);
             proc.StartInfo.WindowStyle = ProcessWindowStyle.Hidden;
+            proc.WaitForExit();
             proc.Start();
         }
     }
